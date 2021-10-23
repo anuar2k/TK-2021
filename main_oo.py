@@ -9,7 +9,7 @@ import scanner_oo # scanner_oo.py is a file you create, (it is not an external l
 if __name__ == '__main__':
 
     try:
-        filename = sys.argv[1] if len(sys.argv) > 1 else "example.txt"
+        filename = sys.argv[1] if len(sys.argv) > 1 else "example2.txt"
         file = open(filename, "r")
     except IOError:
         print("Cannot open {0} file".format(filename))
@@ -28,5 +28,6 @@ if __name__ == '__main__':
         tok = lexer.token()
         if not tok: 
             break      # No more input
-        print(tok)
+        print(f"({tok.lineno}): {tok.type}({tok.value})")
+        # print(tok)
 
