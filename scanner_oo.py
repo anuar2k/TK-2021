@@ -1,7 +1,6 @@
 import ply.lex as lex
 import sys
 
-# https://github.com/PrzemekBurczyk/PLY/blob/master/scanner.py
 class Scanner():
     t_ignore = " \t"
     literals = "+-*/=<>()[]{}:',;"
@@ -39,32 +38,6 @@ class Scanner():
         "STR"
     ] + list(_reserved.values())
 
-    def t_error(self, t: lex.LexToken):
-        print(f"Illegal character {t.value[0]} at line {t.lexer.lineno}", file=sys.stderr)
-
-        t.lexer.skip(1)
-
-    def t_ID(self, t):
-        r"[a-zA-Z_]\w*"
-        t.type = self._reserved.get(t.value, "ID")
-        return t
-
-    def t_newline(self, t):
-        r"\n+"
-        t.lexer.lineno += len(t.value)
-
-    def t_COMMENT(self, t):
-        r"\#.*"
-
-    def build(self):
-        self.lexer = lex.lex(object=self)
-
-    def input(self, text):
-        self.lexer.input(text)
-
-    def token(self):
-        return self.lexer.token()
-
     t_DOTADD = r"\.\+"
     t_DOTSUB = r"\.-"
     t_DOTMUL = r"\.\*"
@@ -79,4 +52,40 @@ class Scanner():
     t_EQ = r"=="
     t_STR = r"\".*\""
     t_INTNUM = r"\d+"
-    t_FLOATNUM = r"[+-]?(\d+[.](\d*)?([eE][+-]?\d+)?|[.]\d+([eE][+-]?\d+)?)"
+
+    def t_ID(self, t):
+        r"[a-zA-Z_]\w*"
+        t.type = self._reserved.get(t.value, "ID")
+        return t
+
+    # https://regex101.com/r/Jb9O3g/1
+    # The idea is to:
+    # 1. match optionally +- sign on the begin
+    # 2. match integer with REQUIRED exponent
+    #    OR
+    #    match float number with OPTIONAL exponent
+    def t_FLOATNUM(self, t):
+        r"[+-]?(\d+[eE][+-]?\d+|((\d+\.\d+|\.\d+|\d+\.)([eE][+-]?\d+)?))"
+        t.value = float(t.value)
+        return t
+
+    def t_COMMENT(self, t):
+        r"\#.*"
+
+    def t_newline(self, t):
+        r"\n+"
+        t.lexer.lineno += len(t.value)
+
+    def t_error(self, t):
+        print(f"Illegal character {t.value[0]} at line {t.lexer.lineno}", file=sys.stderr)
+
+        t.lexer.skip(1)
+
+    def build(self):
+        self.lexer = lex.lex(object=self)
+
+    def input(self, text):
+        self.lexer.input(text)
+
+    def token(self):
+        return self.lexer.token()
