@@ -51,7 +51,6 @@ class Scanner():
     t_NEQ = r"!="
     t_EQ = r"=="
     t_STR = r"\".*\""
-    t_INTNUM = r"[+-]?\d+"
 
     def t_ID(self, t):
         r"[a-zA-Z_]\w*"
@@ -67,6 +66,11 @@ class Scanner():
     def t_FLOATNUM(self, t):
         r"[+-]?(\d+[eE][+-]?\d+|((\d+\.\d+|\.\d+|\d+\.)([eE][+-]?\d+)?))"
         t.value = float(t.value)
+        return t
+
+    def t_INTNUM(self, t):
+        r"[+-]?\d+"
+        t.value = int(t.value)
         return t
 
     def t_COMMENT(self, t):
