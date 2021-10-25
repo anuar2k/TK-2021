@@ -51,7 +51,7 @@ class Scanner():
     t_NEQ = r"!="
     t_EQ = r"=="
     t_STR = r"\".*\""
-    t_INTNUM = r"\d+"
+    t_INTNUM = r"[+-]?\d+"
 
     def t_ID(self, t):
         r"[a-zA-Z_]\w*"
