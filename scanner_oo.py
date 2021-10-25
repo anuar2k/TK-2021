@@ -50,7 +50,7 @@ class Scanner():
     t_GE = r">="
     t_NEQ = r"!="
     t_EQ = r"=="
-    t_STR = r"\".*\""
+    t_STR = r"\".*?\""
 
     def t_ID(self, t):
         r"[a-zA-Z_]\w*"
@@ -59,17 +59,16 @@ class Scanner():
 
     # https://regex101.com/r/Jb9O3g/1
     # The idea is to:
-    # 1. match optionally +- sign on the begin
     # 2. match integer with REQUIRED exponent
     #    OR
     #    match float number with OPTIONAL exponent
     def t_FLOATNUM(self, t):
-        r"[+-]?(\d+[eE][+-]?\d+|((\d+\.\d+|\.\d+|\d+\.)([eE][+-]?\d+)?))"
+        r"\d+[eE][+-]?\d+|((\d+\.\d*|\.\d+)([eE][+-]?\d+)?)"
         t.value = float(t.value)
         return t
 
     def t_INTNUM(self, t):
-        r"[+-]?\d+"
+        r"\d+"
         t.value = int(t.value)
         return t
 
