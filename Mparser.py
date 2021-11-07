@@ -7,15 +7,15 @@ import ply.yacc as yacc
 tokens = scanner_oo.Scanner.tokens
 
 precedence = (
-   # to fill ...
-   ("nonassoc", "IFX"),
-   ("nonassoc", "ELSE"),
-   ("left", '+', '-'),
-   ("left", '*', '/'),
-   ("left", "DOTADD", "DOTSUB"),
-   ("left", "DOTMUL", "DOTDIV"),
-   ('right', 'UMINUS'),
-   # to fill ...
+    # to fill ...
+    ("nonassoc", "IFX"),
+    ("nonassoc", "ELSE"),
+    ("left", '+', '-'),
+    ("left", '*', '/'),
+    ("left", "DOTADD", "DOTSUB"),
+    ("left", "DOTMUL", "DOTDIV"),
+    ('right', 'UMINUS'),
+    # to fill ...
 )
 
 
@@ -59,10 +59,16 @@ def p_expr_binop(p):
             | expr DOTSUB expr
             | expr DOTMUL expr
             | expr DOTDIV expr"""
-
+# zw
 def p_expr_lit(p):
     """expr : FLOATNUM
             | INTNUM"""
+
+def p_expr_id(p):
+    """expr : ID"""
+
+def p_expr_str(p):
+    """expr : STR"""
 
 def p_expr_grp(p):
     """expr : '(' expr ')'"""
@@ -119,10 +125,10 @@ def p_control(p):
             | RETURN expr ';'"""
 
 def p_print(p):
-    """stmt : PRINT STR ';'"""
+    """stmt : PRINT seq ';'"""
 
 def p_access(p):
-    """stmt : ID list"""
+    """stmt : ID list '=' expr"""
 
 # ID = (5 + 5)
 # ID2 = [[2, 1], [3, 7]]
