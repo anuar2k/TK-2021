@@ -7,7 +7,6 @@ import ply.yacc as yacc
 tokens = scanner_oo.Scanner.tokens
 
 precedence = (
-    # to fill ...
     ("nonassoc", "IFX"),
     ("nonassoc", "ELSE"),
     ("left", '+', '-'),
@@ -15,7 +14,6 @@ precedence = (
     ("left", "DOTADD", "DOTSUB"),
     ("left", "DOTMUL", "DOTDIV"),
     ('right', 'UMINUS'),
-    # to fill ...
 )
 
 
@@ -141,14 +139,4 @@ def p_access(p):
          # ID list
 # [[2,3]][2,3]
 
-# ide sie wylac 
-
-# ja zw 3 min
-# to finish the grammar
-# ....
-
-    
-
-
 parser = yacc.yacc()
-
