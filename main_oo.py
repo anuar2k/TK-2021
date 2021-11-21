@@ -3,6 +3,7 @@
 import sys
 import scanner_oo
 import Mparser
+import TreePrinter
 
 if __name__ == '__main__':
     try:
@@ -17,7 +18,8 @@ if __name__ == '__main__':
 
     lexer = scanner_oo.Scanner()
     lexer.build()
-    parser.parse(text, lexer=lexer)
+    ast = parser.parse(text, lexer=lexer)
+    ast.printTree(0)
     # lexer = scanner_oo.Scanner()
     # lexer.build()
 
