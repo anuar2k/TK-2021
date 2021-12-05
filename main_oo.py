@@ -4,6 +4,7 @@ import sys
 import scanner_oo
 import Mparser
 import TreePrinter
+from TypeChecker import TypeChecker
 
 if __name__ == '__main__':
     try:
@@ -20,15 +21,5 @@ if __name__ == '__main__':
     lexer.build()
     ast = parser.parse(text, lexer=lexer)
     ast.printTree(0)
-    # lexer = scanner_oo.Scanner()
-    # lexer.build()
-
-    # # Give the lexer some input
-    # lexer.input(text)
-
-    # # Tokenize
-    # while True:
-    #     tok = lexer.token()
-    #     if not tok: 
-    #         break      # No more input
-    #     print(f"({tok.lineno}): {tok.type}({tok.value})")
+    typeChecker = TypeChecker()   
+    typeChecker.visit(ast)   # or alternatively ast.accept(typeChecker)
