@@ -20,6 +20,6 @@ if __name__ == '__main__':
     lexer = scanner_oo.Scanner()
     lexer.build()
     ast = parser.parse(text, lexer=lexer)
-    ast.printTree(0)
+    # ast.printTree(0)
     typeChecker = TypeChecker()   
     typeChecker.visit(ast)   # or alternatively ast.accept(typeChecker)

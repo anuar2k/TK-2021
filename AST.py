@@ -1,5 +1,6 @@
 class Node(object):
-    pass
+    def __init__(self):
+        self.linenumber = None
 
 class BinExpr(Node):
     def __init__(self, op, left, right):

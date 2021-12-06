@@ -21,7 +21,7 @@ precedence = (
 
 def p_error(p):
     if p:
-        print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno, p.type, p.value))
+        print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno(1), p.type, p.value))
     else:
         print("Unexpected end of input")
 
@@ -29,6 +29,7 @@ def p_error(p):
 def p_program(p):
     """program : stmts_opt"""
     p[0] = AST.Program(p[1])
+    p[0].linenumber = p.lineno(1)
 
 def p_stmts_opt(p):
     """stmts_opt : stmts
@@ -46,15 +47,18 @@ def p_stmt_empty(p):
 def p_stmts_grp(p):
     """stmt : '{' stmts '}'"""
     p[0] = AST.Statements(p[2])
+    p[0].linenumber = p.lineno(1)
 
 def p_id(p):
     """id : ID"""
     p[0] = AST.ID(p[1])
+    p[0].linenumber = p.lineno(1)
 
 def p_lvalue(p):
     """lvalue : id
               | id list"""
     p[0] = AST.LValue(p[1], p[2] if len(p) > 2 else None)
+    p[0].linenumber = p.lineno(1)
 
 def p_assignment(p):
     """stmt : lvalue '=' expr ';'
@@ -63,6 +67,7 @@ def p_assignment(p):
             | lvalue MULASSIGN expr ';'
             | lvalue DIVASSIGN expr ';'"""
     p[0] = AST.Assign(p[2], p[1], p[3])
+    p[0].linenumber = p.lineno(1)
 
 def p_expr_binop(p):
     """expr : expr '+' expr
@@ -74,31 +79,38 @@ def p_expr_binop(p):
             | expr DOTMUL expr
             | expr DOTDIV expr"""
     p[0] = AST.BinExpr(p[2], p[1], p[3])
+    p[0].linenumber = p.lineno(1)
 
 def p_expr_lit(p):
     """expr : FLOATNUM
             | INTNUM"""
     p[0] = AST.IntNum(p[1]) if type(p[1]) == int else AST.FloatNum(p[1])
+    p[0].linenumber = p.lineno(1)
 
 def p_expr_id(p):
     """expr : id"""
     p[0] = p[1]
+    p[0].linenumber = p.lineno(1)
 
 def p_expr_str(p):
     """expr : STR"""
     p[0] = AST.String(p[1])
+    p[0].linenumber = p.lineno(1)
 
 def p_expr_grp(p):
     """expr : '(' expr ')'"""
     p[0] = p[2]
+    p[0].linenumber = p.lineno(1)
 
 def p_uminus(p):
     """expr : '-' expr %prec UMINUS"""
     p[0] = AST.Uminus(p[2])
+    p[0].linenumber = p.lineno(1)
 
 def p_transpose(p):
     """expr : expr '\\''"""
     p[0] = AST.Transpose(p[1])
+    p[0].linenumber = p.lineno(1)
 
 def p_cond(p):
     """cond : expr '<' expr
@@ -108,10 +120,12 @@ def p_cond(p):
             | expr EQ expr
             | expr NEQ expr"""
     p[0] = AST.BinCond(p[2], p[1], p[3])
+    p[0].linenumber = p.lineno(1)
 
 def p_literal_matrix(p):
     """expr : '[' lists ']'"""
     p[0] = AST.Matrix(p[2])
+    p[0].linenumber = p.lineno(1)
 
 def p_lists(p):
     """lists : list
@@ -132,23 +146,28 @@ def p_fun(p):
            | EYE
            | ONES"""
     p[0] = p[1]
+    p[0].linenumber = p.lineno(1)
 
 def p_funcall(p):
     """expr : fun '(' expr ')'"""
     p[0] = AST.Fun(p[1], p[3])
+    p[0].linenumber = p.lineno(1)
 
 def p_while(p):
     """stmt : WHILE '(' cond ')' stmt"""
     p[0] = AST.While(p[3], p[5])
+    p[0].linenumber = p.lineno(1)
 
 def p_for(p):
     """stmt : FOR id '=' expr ':' expr stmt"""
     p[0] = AST.For(p[2], p[4], p[6], p[7])
+    p[0].linenumber = p.lineno(1)
 
 def p_if(p):
     """stmt : IF '(' cond ')' stmt %prec IFX
             | IF '(' cond ')' stmt ELSE stmt"""
     p[0] = AST.IfCond(p[3], p[5], p[7] if len(p) > 7 else None)
+    p[0].linenumber = p.lineno(1)
 
 def p_control(p):
     """stmt : BREAK ';'
@@ -160,10 +179,13 @@ def p_control(p):
         p[0] = AST.Continue()
     else:
         p[0] = AST.Return(p[2])
+    
+    p[0].linenumber = p.lineno(1)
 
 def p_print(p):
     """stmt : PRINT seq ';'"""
     p[0] = AST.Print(p[2])
+    p[0].linenumber = p.lineno(1)
 
 
 # ID = (5 + 5)
