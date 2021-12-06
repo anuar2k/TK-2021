@@ -94,7 +94,6 @@ class TypeChecker(NodeVisitor):
     def visit_ID(self, node):
         if self.table.get(node.id) is None:
             print(f"unknown variable: {node.id}")
-            print(self.table.scopes)
 
     def visit_LValue(self, node):
         if node.index is not None:
