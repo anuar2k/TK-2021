@@ -50,7 +50,11 @@ class Scanner():
     t_GE = r">="
     t_NEQ = r"!="
     t_EQ = r"=="
-    t_STR = r"\".*?\""
+
+    def t_STR(self, t):
+        r"\".*?\""
+        t.value = t.value[1:-1]
+        return t
 
     def t_ID(self, t):
         r"[a-zA-Z_]\w*"

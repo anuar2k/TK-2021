@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+from Interpreter import Interpreter
 import scanner_oo
 import Mparser
 import TreePrinter
@@ -8,7 +9,7 @@ from TypeChecker import TypeChecker
 
 if __name__ == '__main__':
     try:
-        filename = sys.argv[1] if len(sys.argv) > 1 else "example.txt"
+        filename = sys.argv[1] if len(sys.argv) > 1 else "matrix.txt"
         file = open(filename, "r")
     except IOError:
         print(f"Cannot open {filename} file")
@@ -23,3 +24,5 @@ if __name__ == '__main__':
     # ast.printTree(0)
     typeChecker = TypeChecker()   
     typeChecker.visit(ast)   # or alternatively ast.accept(typeChecker)
+    interpreter = Interpreter()
+    interpreter.visit(ast)

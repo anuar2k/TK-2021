@@ -74,14 +74,19 @@ class Interpreter(object):
     @when(AST.Assign)
     def visit(self, node):
         to_assign = self.visit(node.right)
-
-        if node.op[0] != '=':
+        if node.op == '=':
+            if node.left.id.index is not None:
+                x, y = node.left.id.index
+                subs = np.copy(self.memory.get(node.left.id.id))
+                subs[self.visit(x), self.visit(y)] = to_assign
+                to_assign = subs
+        else:
             if node.left.id.index is None:
                 to_assign = self.op_dict[node.op[0]](self.memory.get(node.left.id.id), to_assign)
             else:
                 x, y = node.left.id.index
                 subs = np.copy(self.memory.get(node.left.id.id))
-                subs[x, y] = self.op_dict[node.op[0]](subs[x, y], to_assign)
+                subs[self.visit(x), self.visit(y)] = self.op_dict[node.op[0]](subs[x, y], to_assign)
                 to_assign = subs
 
         self.memory.put(node.left.id.id, to_assign)
@@ -108,7 +113,6 @@ class Interpreter(object):
             try:
                 self.memory.pushScope("loop")
                 self.visit(node.body)
-                self.memory.popScope()
             except ContinueException:
                 pass
             except BreakException:
@@ -170,7 +174,7 @@ class Interpreter(object):
         value = self.memory.get(node.id)
         if node.index is not None:
             x, y = node.index
-            return value[x, y]
+            return value[self.visit(x), self.visit(y)]
         else:
             return value
         
