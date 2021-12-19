@@ -1,38 +1,26 @@
+class Memory:                               
+    def __init__(self):
+        self.scopes = [({}, "global")]
 
+    def get(self, name):
+        for scope in self.scopes[::-1]:
+            res = scope.get(name)
+            if res is not None:
+                return res
 
-class Memory:
+        return None
 
-    def __init__(self, name): # memory name
-        pass
+    def put(self, name, value):
+        for scope in self.scopes[::-1]:
+            if name in scope:
+                scope[name] = value
+                return
 
-    def has_key(self, name):  # variable name
-        pass
+        self.scopes[-1][name] = value
 
-    def get(self, name):         # gets from memory current value of variable <name>
-        pass
+    def pushScope(self, name):
+        self.scopes.append(({}, name))
 
-    def put(self, name, value):  # puts into memory current value of variable <name>
-        pass
-
-
-class MemoryStack:
-                                                                             
-    def __init__(self, memory=None): # initialize memory stack with memory <memory>
-        pass
-
-    def get(self, name):             # gets from memory stack current value of variable <name>
-        pass
-
-    def insert(self, name, value): # inserts into memory stack variable <name> with value <value>
-        pass
-
-    def set(self, name, value): # sets variable <name> to value <value>
-        pass
-
-    def push(self, memory): # pushes memory <memory> onto the stack
-        pass
-
-    def pop(self):          # pops the top memory from the stack
-        pass
-
-
+    def popScope(self):
+        self.scopes.pop()
+        

@@ -163,11 +163,4 @@ class TreePrinter:
 
     @addToClass(AST.Error)
     def printTree(self, indent=0):
-        pass    
-        # fill in the body
-
-
-    # define printTree for other classes
-    # ...
-
-
+        pass
