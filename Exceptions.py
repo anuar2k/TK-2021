@@ -7,3 +7,6 @@ class BreakException(Exception):
 
 class ContinueException(Exception):
     pass
+
+class ArgumentException(Exception):
+    pass

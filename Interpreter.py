@@ -11,26 +11,76 @@ sys.setrecursionlimit(10000)
 class Interpreter(object):
     def __init__(self):
         self.memory = Memory()
-        self.op_dict = {
-            '+' : lambda x, y: x + y,
-            '-' : lambda x, y: x - y,
-            '*' : lambda x, y: x * y, 
-            '/' : lambda x, y: x / y,
-            '.+': lambda x, y: np.add(x,y),
-            '.-': lambda x, y: np.subtract(x,y),
-            '.*': lambda x, y: np.multiply(x,y),
-            './': lambda x, y: np.divide(x,y),
-            "'": lambda x: np.transpose(x),
-            "==": lambda x, y: x == y,
-            "!=": lambda x, y: x != y,
-            ">=": lambda x, y: x >= y,
-            "<=": lambda x, y: x <= y,
-            '<': lambda x, y: x < y,
-            '>': lambda x, y: x > y,
-            "zeros": lambda s: np.zeros((s,s)),
-            "ones": lambda s: np.ones((s,s)),
-            "eye": lambda s: np.eye(s),
+        self.numeric_argset = {
+            (int, int),
+            (int, float),
+            (float, int),
+            (float, float),
+            (int, np.ndarray),
+            (np.ndarray, int),
+            (float, np.ndarray),
+            (np.ndarray, float)
         }
+        self.mul_argset = self.numeric_argset | {(str, int)}
+        self.mat_argset = {(np.ndarray, np.ndarray)}
+        self.bool_argset = {
+            (int, int),
+            (int, float),
+            (float, int),
+            (float, float),
+            (np.ndarray, np.ndarray)
+        }
+        self.transpose_argset = ((np.ndarray,))
+        self.fun_argset = {(int,)}
+
+        self.argsets = {
+            '+' :    self.numeric_argset,
+            '-' :    self.numeric_argset,
+            '*' :    self.mul_argset, 
+            '/' :    self.numeric_argset,
+            '.+':    self.mat_argset,
+            '.-':    self.mat_argset,
+            '.*':    self.mat_argset,
+            './':    self.mat_argset,
+            "==":    self.bool_argset,
+            "!=":    self.bool_argset,
+            ">=":    self.bool_argset,
+            "<=":    self.bool_argset,
+            '<':     self.bool_argset,
+            '>':     self.bool_argset,
+            "'":     self.transpose_argset,
+            "zeros": self.fun_argset,
+            "ones":  self.fun_argset,
+            "eye":   self.fun_argset,
+        }
+
+        self.ops = {
+            '+' :    lambda x, y: x + y,
+            '-' :    lambda x, y: x - y,
+            '*' :    lambda x, y: x * y, 
+            '/' :    lambda x, y: x / y,
+            '.+':    lambda x, y: np.add(x,y),
+            '.-':    lambda x, y: np.subtract(x,y),
+            '.*':    lambda x, y: np.multiply(x,y),
+            './':    lambda x, y: np.divide(x,y),
+            "==":    lambda x, y: x == y,
+            "!=":    lambda x, y: x != y,
+            ">=":    lambda x, y: x >= y,
+            "<=":    lambda x, y: x <= y,
+            '<':     lambda x, y: x < y,
+            '>':     lambda x, y: x > y,
+            "'":     lambda x: np.transpose(x),
+            "zeros": lambda s: np.zeros((s,s)),
+            "ones":  lambda s: np.ones((s,s)),
+            "eye":   lambda s: np.eye(s),
+        }
+
+    def evaluate(self, op, args):
+        types = tuple(type(arg) for arg in args)
+        if types not in self.argsets[op]:
+            raise ArgumentException()
+        
+        return self.ops[op](*args)
 
     @on('node')
     def visit(self, node):
@@ -42,28 +92,52 @@ class Interpreter(object):
 
     @when(AST.BinExpr)
     def visit(self, node):
-        return self.op_dict[node.op](self.visit(node.left), self.visit(node.right))
+        return self.evaluate(node.op, (self.visit(node.left), self.visit(node.right)))
 
     @when(AST.BinCond)
     def visit(self, node):
-        return self.op_dict[node.op](self.visit(node.left), self.visit(node.right))
+        return self.evaluate(node.op, (self.visit(node.left), self.visit(node.right)))
 
     @when(AST.Assign)
     def visit(self, node):
         to_assign = self.visit(node.right)
         if node.op == '=':
             if node.left.id.index is not None:
-                x, y = node.left.id.index
-                subs = np.copy(self.memory.get(node.left.id.id))
-                subs[self.visit(x), self.visit(y)] = to_assign
+                x_src, y_src = node.left.id.index
+                subs_src = self.memory.get(node.left.id.id)
+                if type(subs_src) != np.ndarray:
+                    raise ArgumentException()
+                subs = np.copy(subs_src)
+
+                x, y = self.visit(x_src), self.visit(y_src)
+                if type(x) != int:
+                    raise ArgumentException()
+                if type(y) != int:
+                    raise ArgumentException()
+                if type(to_assign) not in { int, float }:
+                    raise ArgumentException()
+
+                subs[x, y] = to_assign
                 to_assign = subs
         else:
             if node.left.id.index is None:
-                to_assign = self.op_dict[node.op[0]](self.memory.get(node.left.id.id), to_assign)
+                to_assign = self.evaluate(node.op[0], (self.memory.get(node.left.id.id), to_assign))
             else:
-                x, y = node.left.id.index
-                subs = np.copy(self.memory.get(node.left.id.id))
-                subs[self.visit(x), self.visit(y)] = self.op_dict[node.op[0]](subs[x, y], to_assign)
+                x_src, y_src = node.left.id.index
+                subs_src = self.memory.get(node.left.id.id)
+                if type(subs_src) != np.ndarray:
+                    raise ArgumentException()
+                subs = np.copy(subs_src)
+
+                x, y = self.visit(x_src), self.visit(y_src)
+                if type(x) != int:
+                    raise ArgumentException()
+                if type(y) != int:
+                    raise ArgumentException()
+                if type(to_assign) not in { int, float }:
+                    raise ArgumentException()
+
+                subs[x, y] = self.evaluate(node.op[0], (subs[x, y], to_assign))
                 to_assign = subs
 
         self.memory.put(node.left.id.id, to_assign)
@@ -132,11 +206,11 @@ class Interpreter(object):
 
     @when(AST.Transpose)
     def visit(self, node):
-        return self.op_dict["'"](self.visit(node.arg))
+        return self.evaluate("'", (self.visit(node.arg),))
 
     @when(AST.Fun)
     def visit(self, node):
-        return self.op_dict[node.fun](self.visit(node.arg))
+        return self.evaluate(node.fun, (self.visit(node.arg),))
 
     @when(AST.Matrix)
     def visit(self, node):
@@ -144,7 +218,7 @@ class Interpreter(object):
     
     @when(AST.Uminus)
     def visit(self, node):
-        return self.op_dict["*"](self.visit(node.arg), -1)
+        return self.evaluate("*", (self.visit(node.arg), 1))
 
     @when(AST.ID)
     def visit(self, node):
