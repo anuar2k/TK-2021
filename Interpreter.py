@@ -214,7 +214,7 @@ class Interpreter(object):
 
     @when(AST.Matrix)
     def visit(self, node):
-        return np.array(node.matrix)
+        return np.array([[self.visit(val) for val in row] for row in node.matrix])
     
     @when(AST.Uminus)
     def visit(self, node):
