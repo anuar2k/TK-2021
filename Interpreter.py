@@ -87,34 +87,49 @@ class Interpreter(object):
     @when(AST.IfCond)
     def visit(self, node):
         if self.visit(node.cond):
-            self.memory.pushScope("normal")
-            self.visit(node.if_body)
-            self.memory.popScope()
+            try:
+                self.memory.pushScope("normal")
+                self.visit(node.if_body)
+            finally:
+                self.memory.popScope()
         else:
             if node.else_body is not None:
-                self.memory.pushScope("normal")
-                self.visit(node.else_body)
-                self.memory.popScope()
+                try:
+                    self.memory.pushScope("normal")
+                    self.visit(node.else_body)
+                finally:
+                    self.memory.popScope()
 
     @when(AST.While)
     def visit(self, node):
-        # TODO: exceptions
         while self.visit(node.cond):
-            self.memory.pushScope("loop")
-            self.visit(node.body)
-            self.memory.popScope()
+            try:
+                self.memory.pushScope("loop")
+                self.visit(node.body)
+                self.memory.popScope()
+            except ContinueException:
+                pass
+            except BreakException:
+                break
+            finally:
+                self.memory.popScope()
 
     @when(AST.For)
     def visit(self, node):
-        # TODO: exceptions
         begin = self.visit(node.begin)
         end = self.visit(node.end)
 
         for i in range(begin, end):
-            self.memory.pushScope("loop")
-            self.memory.put(node.var.id, i)
-            self.visit(node.body)
-            self.memory.popScope()
+            try:
+                self.memory.pushScope("loop")
+                self.memory.put(node.var.id, i)
+                self.visit(node.body)
+            except ContinueException:
+                pass
+            except BreakException:
+                break
+            finally:
+                self.memory.popScope()
     
     @when(AST.Break)
     def visit(self, node):
@@ -168,10 +183,12 @@ class Interpreter(object):
     
     @when(AST.Statements)
     def visit(self, node):
-        self.memory.pushScope("normal")
-        for stmt in node.stmts:
-            self.visit(stmt)
-        self.memory.popScope()
+        try:
+            self.memory.pushScope("normal")
+            for stmt in node.stmts:
+                self.visit(stmt)
+        finally:
+            self.memory.popScope()
 
     @when(AST.IntNum)
     def visit(self, node):
@@ -183,5 +200,8 @@ class Interpreter(object):
     
     @when(AST.Program)
     def visit(self, node):
-        for stmt in node.stmts:
-            self.visit(stmt)
+        try:
+            for stmt in node.stmts:
+                self.visit(stmt)
+        except ReturnValueException as rve:
+            print(f"Program returned value {rve.value}")
