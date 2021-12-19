@@ -214,7 +214,12 @@ class Interpreter(object):
 
     @when(AST.Matrix)
     def visit(self, node):
-        return np.array([[self.visit(val) for val in row] for row in node.matrix])
+        result = np.array([[self.visit(val) for val in row] for row in node.matrix])
+        for row in result:
+            for cell in row:
+                if type(cell) != int and type(cell) != float:
+                    raise ArgumentException()
+        return result
     
     @when(AST.Uminus)
     def visit(self, node):
