@@ -50,14 +50,14 @@ def p_stmts_grp(p):
     p[0].linenumber = p.lineno(1)
 
 def p_id(p):
-    """id : ID"""
-    p[0] = AST.ID(p[1])
+    """id : ID
+          | ID list"""
+    p[0] = AST.ID(p[1], p[2] if len(p) > 2 else None)
     p[0].linenumber = p.lineno(1)
 
 def p_lvalue(p):
-    """lvalue : id
-              | id list"""
-    p[0] = AST.LValue(p[1], p[2] if len(p) > 2 else None)
+    """lvalue : id"""
+    p[0] = AST.LValue(p[1])
     p[0].linenumber = p.lineno(1)
 
 def p_assignment(p):
@@ -146,7 +146,6 @@ def p_fun(p):
            | EYE
            | ONES"""
     p[0] = p[1]
-    p[0].linenumber = p.lineno(1)
 
 def p_funcall(p):
     """expr : fun '(' expr ')'"""

@@ -11,8 +11,8 @@ Rule 5     stmts -> stmt
 Rule 6     stmt -> ;
 Rule 7     stmt -> { stmts }
 Rule 8     id -> ID
-Rule 9     lvalue -> id
-Rule 10    lvalue -> id list
+Rule 9     id -> ID list
+Rule 10    lvalue -> id
 Rule 11    stmt -> lvalue = expr ;
 Rule 12    stmt -> lvalue ADDASSIGN expr ;
 Rule 13    stmt -> lvalue SUBASSIGN expr ;
@@ -87,7 +87,7 @@ EYE                  : 44
 FLOATNUM             : 24
 FOR                  : 48
 GE                   : 34
-ID                   : 8
+ID                   : 8 9
 IF                   : 49 50
 INTNUM               : 25
 LE                   : 33
@@ -111,8 +111,8 @@ Nonterminals, with rules where they appear
 cond                 : 47 49 50
 expr                 : 11 12 13 14 15 16 16 17 17 18 18 19 19 20 20 21 21 22 22 23 23 28 29 30 31 31 32 32 33 33 34 34 35 35 36 36 41 42 46 48 48 53
 fun                  : 46
-id                   : 9 10 26 48
-list                 : 10 38 39
+id                   : 10 26 48
+list                 : 9 38 39
 lists                : 37 39
 lvalue               : 11 12 13 14 15
 program              : 0
@@ -146,9 +146,9 @@ state 0
     (52) stmt -> . CONTINUE ;
     (53) stmt -> . RETURN expr ;
     (54) stmt -> . PRINT seq ;
-    (9) lvalue -> . id
-    (10) lvalue -> . id list
+    (10) lvalue -> . id
     (8) id -> . ID
+    (9) id -> . ID list
 
     $end            reduce using rule 3 (stmts_opt -> .)
     ;               shift and go to state 5
@@ -201,9 +201,9 @@ state 3
     (52) stmt -> . CONTINUE ;
     (53) stmt -> . RETURN expr ;
     (54) stmt -> . PRINT seq ;
-    (9) lvalue -> . id
-    (10) lvalue -> . id list
+    (10) lvalue -> . id
     (8) id -> . ID
+    (9) id -> . ID list
 
     $end            reduce using rule 2 (stmts_opt -> stmts .)
     ;               shift and go to state 5
@@ -278,9 +278,9 @@ state 6
     (52) stmt -> . CONTINUE ;
     (53) stmt -> . RETURN expr ;
     (54) stmt -> . PRINT seq ;
-    (9) lvalue -> . id
-    (10) lvalue -> . id list
+    (10) lvalue -> . id
     (8) id -> . ID
+    (9) id -> . ID list
 
     ;               shift and go to state 5
     {               shift and go to state 6
@@ -324,6 +324,7 @@ state 9
 
     (48) stmt -> FOR . id = expr : expr stmt
     (8) id -> . ID
+    (9) id -> . ID list
 
     ID              shift and go to state 16
 
@@ -331,39 +332,35 @@ state 9
 
 state 10
 
-    (9) lvalue -> id .
-    (10) lvalue -> id . list
-    (40) list -> . [ seq ]
+    (10) lvalue -> id .
 
-    =               reduce using rule 9 (lvalue -> id .)
-    ADDASSIGN       reduce using rule 9 (lvalue -> id .)
-    SUBASSIGN       reduce using rule 9 (lvalue -> id .)
-    MULASSIGN       reduce using rule 9 (lvalue -> id .)
-    DIVASSIGN       reduce using rule 9 (lvalue -> id .)
-    [               shift and go to state 27
+    =               reduce using rule 10 (lvalue -> id .)
+    ADDASSIGN       reduce using rule 10 (lvalue -> id .)
+    SUBASSIGN       reduce using rule 10 (lvalue -> id .)
+    MULASSIGN       reduce using rule 10 (lvalue -> id .)
+    DIVASSIGN       reduce using rule 10 (lvalue -> id .)
 
-    list                           shift and go to state 26
 
 state 11
 
     (49) stmt -> IF . ( cond ) stmt
     (50) stmt -> IF . ( cond ) stmt ELSE stmt
 
-    (               shift and go to state 28
+    (               shift and go to state 26
 
 
 state 12
 
     (51) stmt -> BREAK . ;
 
-    ;               shift and go to state 29
+    ;               shift and go to state 27
 
 
 state 13
 
     (52) stmt -> CONTINUE . ;
 
-    ;               shift and go to state 30
+    ;               shift and go to state 28
 
 
 state 14
@@ -387,24 +384,25 @@ state 14
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    expr                           shift and go to state 31
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    expr                           shift and go to state 29
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 15
 
@@ -429,31 +427,33 @@ state 15
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    seq                            shift and go to state 43
-    expr                           shift and go to state 44
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    seq                            shift and go to state 41
+    expr                           shift and go to state 42
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 16
 
     (8) id -> ID .
+    (9) id -> ID . list
+    (40) list -> . [ seq ]
 
-    [               reduce using rule 8 (id -> ID .)
     =               reduce using rule 8 (id -> ID .)
     ADDASSIGN       reduce using rule 8 (id -> ID .)
     SUBASSIGN       reduce using rule 8 (id -> ID .)
@@ -476,8 +476,8 @@ state 16
     GE              reduce using rule 8 (id -> ID .)
     EQ              reduce using rule 8 (id -> ID .)
     NEQ             reduce using rule 8 (id -> ID .)
-    ]               reduce using rule 8 (id -> ID .)
     )               reduce using rule 8 (id -> ID .)
+    ]               reduce using rule 8 (id -> ID .)
     :               reduce using rule 8 (id -> ID .)
     {               reduce using rule 8 (id -> ID .)
     WHILE           reduce using rule 8 (id -> ID .)
@@ -488,7 +488,9 @@ state 16
     RETURN          reduce using rule 8 (id -> ID .)
     PRINT           reduce using rule 8 (id -> ID .)
     ID              reduce using rule 8 (id -> ID .)
+    [               shift and go to state 44
 
+    list                           shift and go to state 43
 
 state 17
 
@@ -527,9 +529,9 @@ state 18
     (52) stmt -> . CONTINUE ;
     (53) stmt -> . RETURN expr ;
     (54) stmt -> . PRINT seq ;
-    (9) lvalue -> . id
-    (10) lvalue -> . id list
+    (10) lvalue -> . id
     (8) id -> . ID
+    (9) id -> . ID list
 
     }               shift and go to state 45
     ;               shift and go to state 5
@@ -568,24 +570,25 @@ state 19
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
     expr                           shift and go to state 46
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 20
 
@@ -608,24 +611,25 @@ state 20
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
     expr                           shift and go to state 47
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 21
 
@@ -648,24 +652,25 @@ state 21
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
     expr                           shift and go to state 48
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 22
 
@@ -688,24 +693,25 @@ state 22
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
     expr                           shift and go to state 49
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 23
 
@@ -728,24 +734,25 @@ state 23
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
     expr                           shift and go to state 50
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 24
 
@@ -774,25 +781,26 @@ state 24
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
     cond                           shift and go to state 51
     expr                           shift and go to state 52
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 25
 
@@ -802,60 +810,6 @@ state 25
 
 
 state 26
-
-    (10) lvalue -> id list .
-
-    =               reduce using rule 10 (lvalue -> id list .)
-    ADDASSIGN       reduce using rule 10 (lvalue -> id list .)
-    SUBASSIGN       reduce using rule 10 (lvalue -> id list .)
-    MULASSIGN       reduce using rule 10 (lvalue -> id list .)
-    DIVASSIGN       reduce using rule 10 (lvalue -> id list .)
-
-
-state 27
-
-    (40) list -> [ . seq ]
-    (41) seq -> . expr
-    (42) seq -> . seq , expr
-    (16) expr -> . expr + expr
-    (17) expr -> . expr - expr
-    (18) expr -> . expr * expr
-    (19) expr -> . expr / expr
-    (20) expr -> . expr DOTADD expr
-    (21) expr -> . expr DOTSUB expr
-    (22) expr -> . expr DOTMUL expr
-    (23) expr -> . expr DOTDIV expr
-    (24) expr -> . FLOATNUM
-    (25) expr -> . INTNUM
-    (26) expr -> . id
-    (27) expr -> . STR
-    (28) expr -> . ( expr )
-    (29) expr -> . - expr
-    (30) expr -> . expr '
-    (37) expr -> . [ lists ]
-    (46) expr -> . fun ( expr )
-    (8) id -> . ID
-    (43) fun -> . ZEROS
-    (44) fun -> . EYE
-    (45) fun -> . ONES
-
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
-    ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
-
-    seq                            shift and go to state 54
-    expr                           shift and go to state 44
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
-
-state 28
 
     (49) stmt -> IF ( . cond ) stmt
     (50) stmt -> IF ( . cond ) stmt ELSE stmt
@@ -883,27 +837,28 @@ state 28
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    cond                           shift and go to state 55
+    cond                           shift and go to state 54
     expr                           shift and go to state 52
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
-state 29
+state 27
 
     (51) stmt -> BREAK ; .
 
@@ -922,7 +877,7 @@ state 29
     ELSE            reduce using rule 51 (stmt -> BREAK ; .)
 
 
-state 30
+state 28
 
     (52) stmt -> CONTINUE ; .
 
@@ -941,7 +896,7 @@ state 30
     ELSE            reduce using rule 52 (stmt -> CONTINUE ; .)
 
 
-state 31
+state 29
 
     (53) stmt -> RETURN expr . ;
     (16) expr -> expr . + expr
@@ -954,19 +909,19 @@ state 31
     (23) expr -> expr . DOTDIV expr
     (30) expr -> expr . '
 
-    ;               shift and go to state 56
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    ;               shift and go to state 55
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
-state 32
+state 30
 
     (29) expr -> - . expr
     (16) expr -> . expr + expr
@@ -987,26 +942,27 @@ state 32
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    expr                           shift and go to state 66
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    expr                           shift and go to state 65
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
-state 33
+state 31
 
     (24) expr -> FLOATNUM .
 
@@ -1027,8 +983,8 @@ state 33
     GE              reduce using rule 24 (expr -> FLOATNUM .)
     EQ              reduce using rule 24 (expr -> FLOATNUM .)
     NEQ             reduce using rule 24 (expr -> FLOATNUM .)
-    ]               reduce using rule 24 (expr -> FLOATNUM .)
     )               reduce using rule 24 (expr -> FLOATNUM .)
+    ]               reduce using rule 24 (expr -> FLOATNUM .)
     :               reduce using rule 24 (expr -> FLOATNUM .)
     {               reduce using rule 24 (expr -> FLOATNUM .)
     WHILE           reduce using rule 24 (expr -> FLOATNUM .)
@@ -1041,7 +997,7 @@ state 33
     ID              reduce using rule 24 (expr -> FLOATNUM .)
 
 
-state 34
+state 32
 
     (25) expr -> INTNUM .
 
@@ -1062,8 +1018,8 @@ state 34
     GE              reduce using rule 25 (expr -> INTNUM .)
     EQ              reduce using rule 25 (expr -> INTNUM .)
     NEQ             reduce using rule 25 (expr -> INTNUM .)
-    ]               reduce using rule 25 (expr -> INTNUM .)
     )               reduce using rule 25 (expr -> INTNUM .)
+    ]               reduce using rule 25 (expr -> INTNUM .)
     :               reduce using rule 25 (expr -> INTNUM .)
     {               reduce using rule 25 (expr -> INTNUM .)
     WHILE           reduce using rule 25 (expr -> INTNUM .)
@@ -1076,7 +1032,7 @@ state 34
     ID              reduce using rule 25 (expr -> INTNUM .)
 
 
-state 35
+state 33
 
     (26) expr -> id .
 
@@ -1097,8 +1053,8 @@ state 35
     GE              reduce using rule 26 (expr -> id .)
     EQ              reduce using rule 26 (expr -> id .)
     NEQ             reduce using rule 26 (expr -> id .)
-    ]               reduce using rule 26 (expr -> id .)
     )               reduce using rule 26 (expr -> id .)
+    ]               reduce using rule 26 (expr -> id .)
     :               reduce using rule 26 (expr -> id .)
     {               reduce using rule 26 (expr -> id .)
     WHILE           reduce using rule 26 (expr -> id .)
@@ -1111,7 +1067,7 @@ state 35
     ID              reduce using rule 26 (expr -> id .)
 
 
-state 36
+state 34
 
     (27) expr -> STR .
 
@@ -1132,8 +1088,8 @@ state 36
     GE              reduce using rule 27 (expr -> STR .)
     EQ              reduce using rule 27 (expr -> STR .)
     NEQ             reduce using rule 27 (expr -> STR .)
-    ]               reduce using rule 27 (expr -> STR .)
     )               reduce using rule 27 (expr -> STR .)
+    ]               reduce using rule 27 (expr -> STR .)
     :               reduce using rule 27 (expr -> STR .)
     {               reduce using rule 27 (expr -> STR .)
     WHILE           reduce using rule 27 (expr -> STR .)
@@ -1146,7 +1102,7 @@ state 36
     ID              reduce using rule 27 (expr -> STR .)
 
 
-state 37
+state 35
 
     (28) expr -> ( . expr )
     (16) expr -> . expr + expr
@@ -1167,75 +1123,76 @@ state 37
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    expr                           shift and go to state 67
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    expr                           shift and go to state 66
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
-state 38
+state 36
 
     (37) expr -> [ . lists ]
     (38) lists -> . list
     (39) lists -> . lists , list
     (40) list -> . [ seq ]
 
-    [               shift and go to state 27
+    [               shift and go to state 44
 
-    lists                          shift and go to state 68
-    list                           shift and go to state 69
+    lists                          shift and go to state 67
+    list                           shift and go to state 68
 
-state 39
+state 37
 
     (46) expr -> fun . ( expr )
 
-    (               shift and go to state 70
+    (               shift and go to state 69
 
 
-state 40
+state 38
 
     (43) fun -> ZEROS .
 
     (               reduce using rule 43 (fun -> ZEROS .)
 
 
-state 41
+state 39
 
     (44) fun -> EYE .
 
     (               reduce using rule 44 (fun -> EYE .)
 
 
-state 42
+state 40
 
     (45) fun -> ONES .
 
     (               reduce using rule 45 (fun -> ONES .)
 
 
-state 43
+state 41
 
     (54) stmt -> PRINT seq . ;
     (42) seq -> seq . , expr
 
-    ;               shift and go to state 71
-    ,               shift and go to state 72
+    ;               shift and go to state 70
+    ,               shift and go to state 71
 
 
-state 44
+state 42
 
     (41) seq -> expr .
     (16) expr -> expr . + expr
@@ -1251,16 +1208,100 @@ state 44
     ;               reduce using rule 41 (seq -> expr .)
     ,               reduce using rule 41 (seq -> expr .)
     ]               reduce using rule 41 (seq -> expr .)
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
+
+state 43
+
+    (9) id -> ID list .
+
+    =               reduce using rule 9 (id -> ID list .)
+    ADDASSIGN       reduce using rule 9 (id -> ID list .)
+    SUBASSIGN       reduce using rule 9 (id -> ID list .)
+    MULASSIGN       reduce using rule 9 (id -> ID list .)
+    DIVASSIGN       reduce using rule 9 (id -> ID list .)
+    ;               reduce using rule 9 (id -> ID list .)
+    +               reduce using rule 9 (id -> ID list .)
+    -               reduce using rule 9 (id -> ID list .)
+    *               reduce using rule 9 (id -> ID list .)
+    /               reduce using rule 9 (id -> ID list .)
+    DOTADD          reduce using rule 9 (id -> ID list .)
+    DOTSUB          reduce using rule 9 (id -> ID list .)
+    DOTMUL          reduce using rule 9 (id -> ID list .)
+    DOTDIV          reduce using rule 9 (id -> ID list .)
+    '               reduce using rule 9 (id -> ID list .)
+    ,               reduce using rule 9 (id -> ID list .)
+    <               reduce using rule 9 (id -> ID list .)
+    >               reduce using rule 9 (id -> ID list .)
+    LE              reduce using rule 9 (id -> ID list .)
+    GE              reduce using rule 9 (id -> ID list .)
+    EQ              reduce using rule 9 (id -> ID list .)
+    NEQ             reduce using rule 9 (id -> ID list .)
+    )               reduce using rule 9 (id -> ID list .)
+    ]               reduce using rule 9 (id -> ID list .)
+    :               reduce using rule 9 (id -> ID list .)
+    {               reduce using rule 9 (id -> ID list .)
+    WHILE           reduce using rule 9 (id -> ID list .)
+    FOR             reduce using rule 9 (id -> ID list .)
+    IF              reduce using rule 9 (id -> ID list .)
+    BREAK           reduce using rule 9 (id -> ID list .)
+    CONTINUE        reduce using rule 9 (id -> ID list .)
+    RETURN          reduce using rule 9 (id -> ID list .)
+    PRINT           reduce using rule 9 (id -> ID list .)
+    ID              reduce using rule 9 (id -> ID list .)
+
+
+state 44
+
+    (40) list -> [ . seq ]
+    (41) seq -> . expr
+    (42) seq -> . seq , expr
+    (16) expr -> . expr + expr
+    (17) expr -> . expr - expr
+    (18) expr -> . expr * expr
+    (19) expr -> . expr / expr
+    (20) expr -> . expr DOTADD expr
+    (21) expr -> . expr DOTSUB expr
+    (22) expr -> . expr DOTMUL expr
+    (23) expr -> . expr DOTDIV expr
+    (24) expr -> . FLOATNUM
+    (25) expr -> . INTNUM
+    (26) expr -> . id
+    (27) expr -> . STR
+    (28) expr -> . ( expr )
+    (29) expr -> . - expr
+    (30) expr -> . expr '
+    (37) expr -> . [ lists ]
+    (46) expr -> . fun ( expr )
+    (8) id -> . ID
+    (9) id -> . ID list
+    (43) fun -> . ZEROS
+    (44) fun -> . EYE
+    (45) fun -> . ONES
+
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
+    ID              shift and go to state 16
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
+
+    seq                            shift and go to state 72
+    expr                           shift and go to state 42
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 45
 
@@ -1295,15 +1336,15 @@ state 46
     (30) expr -> expr . '
 
     ;               shift and go to state 73
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
 state 47
@@ -1320,15 +1361,15 @@ state 47
     (30) expr -> expr . '
 
     ;               shift and go to state 74
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
 state 48
@@ -1345,15 +1386,15 @@ state 48
     (30) expr -> expr . '
 
     ;               shift and go to state 75
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
 state 49
@@ -1370,15 +1411,15 @@ state 49
     (30) expr -> expr . '
 
     ;               shift and go to state 76
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
 state 50
@@ -1395,15 +1436,15 @@ state 50
     (30) expr -> expr . '
 
     ;               shift and go to state 77
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
 state 51
@@ -1437,15 +1478,15 @@ state 52
     GE              shift and go to state 82
     EQ              shift and go to state 83
     NEQ             shift and go to state 84
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
 state 53
@@ -1469,43 +1510,35 @@ state 53
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    id                             shift and go to state 35
+    id                             shift and go to state 33
     expr                           shift and go to state 85
-    fun                            shift and go to state 39
+    fun                            shift and go to state 37
 
 state 54
-
-    (40) list -> [ seq . ]
-    (42) seq -> seq . , expr
-
-    ]               shift and go to state 86
-    ,               shift and go to state 72
-
-
-state 55
 
     (49) stmt -> IF ( cond . ) stmt
     (50) stmt -> IF ( cond . ) stmt ELSE stmt
 
-    )               shift and go to state 87
+    )               shift and go to state 86
 
 
-state 56
+state 55
 
     (53) stmt -> RETURN expr ; .
 
@@ -1524,7 +1557,7 @@ state 56
     ELSE            reduce using rule 53 (stmt -> RETURN expr ; .)
 
 
-state 57
+state 56
 
     (16) expr -> expr + . expr
     (16) expr -> . expr + expr
@@ -1545,26 +1578,27 @@ state 57
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    expr                           shift and go to state 88
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    expr                           shift and go to state 87
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
-state 58
+state 57
 
     (17) expr -> expr - . expr
     (16) expr -> . expr + expr
@@ -1585,26 +1619,27 @@ state 58
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    expr                           shift and go to state 89
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    expr                           shift and go to state 88
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
-state 59
+state 58
 
     (18) expr -> expr * . expr
     (16) expr -> . expr + expr
@@ -1625,26 +1660,27 @@ state 59
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    expr                           shift and go to state 90
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    expr                           shift and go to state 89
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
-state 60
+state 59
 
     (19) expr -> expr / . expr
     (16) expr -> . expr + expr
@@ -1665,26 +1701,27 @@ state 60
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    expr                           shift and go to state 91
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    expr                           shift and go to state 90
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
-state 61
+state 60
 
     (20) expr -> expr DOTADD . expr
     (16) expr -> . expr + expr
@@ -1705,26 +1742,27 @@ state 61
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    expr                           shift and go to state 92
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    expr                           shift and go to state 91
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
-state 62
+state 61
 
     (21) expr -> expr DOTSUB . expr
     (16) expr -> . expr + expr
@@ -1745,26 +1783,27 @@ state 62
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    expr                           shift and go to state 93
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    expr                           shift and go to state 92
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
-state 63
+state 62
 
     (22) expr -> expr DOTMUL . expr
     (16) expr -> . expr + expr
@@ -1785,26 +1824,27 @@ state 63
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    expr                           shift and go to state 94
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    expr                           shift and go to state 93
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
-state 64
+state 63
 
     (23) expr -> expr DOTDIV . expr
     (16) expr -> . expr + expr
@@ -1825,26 +1865,27 @@ state 64
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    expr                           shift and go to state 95
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    expr                           shift and go to state 94
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
-state 65
+state 64
 
     (30) expr -> expr ' .
 
@@ -1865,8 +1906,8 @@ state 65
     GE              reduce using rule 30 (expr -> expr ' .)
     EQ              reduce using rule 30 (expr -> expr ' .)
     NEQ             reduce using rule 30 (expr -> expr ' .)
-    ]               reduce using rule 30 (expr -> expr ' .)
     )               reduce using rule 30 (expr -> expr ' .)
+    ]               reduce using rule 30 (expr -> expr ' .)
     :               reduce using rule 30 (expr -> expr ' .)
     {               reduce using rule 30 (expr -> expr ' .)
     WHILE           reduce using rule 30 (expr -> expr ' .)
@@ -1879,7 +1920,7 @@ state 65
     ID              reduce using rule 30 (expr -> expr ' .)
 
 
-state 66
+state 65
 
     (29) expr -> - expr .
     (16) expr -> expr . + expr
@@ -1908,8 +1949,8 @@ state 66
     GE              reduce using rule 29 (expr -> - expr .)
     EQ              reduce using rule 29 (expr -> - expr .)
     NEQ             reduce using rule 29 (expr -> - expr .)
-    ]               reduce using rule 29 (expr -> - expr .)
     )               reduce using rule 29 (expr -> - expr .)
+    ]               reduce using rule 29 (expr -> - expr .)
     :               reduce using rule 29 (expr -> - expr .)
     {               reduce using rule 29 (expr -> - expr .)
     WHILE           reduce using rule 29 (expr -> - expr .)
@@ -1920,20 +1961,20 @@ state 66
     RETURN          reduce using rule 29 (expr -> - expr .)
     PRINT           reduce using rule 29 (expr -> - expr .)
     ID              reduce using rule 29 (expr -> - expr .)
-    '               shift and go to state 65
+    '               shift and go to state 64
 
   ! '               [ reduce using rule 29 (expr -> - expr .) ]
-  ! +               [ shift and go to state 57 ]
-  ! -               [ shift and go to state 58 ]
-  ! *               [ shift and go to state 59 ]
-  ! /               [ shift and go to state 60 ]
-  ! DOTADD          [ shift and go to state 61 ]
-  ! DOTSUB          [ shift and go to state 62 ]
-  ! DOTMUL          [ shift and go to state 63 ]
-  ! DOTDIV          [ shift and go to state 64 ]
+  ! +               [ shift and go to state 56 ]
+  ! -               [ shift and go to state 57 ]
+  ! *               [ shift and go to state 58 ]
+  ! /               [ shift and go to state 59 ]
+  ! DOTADD          [ shift and go to state 60 ]
+  ! DOTSUB          [ shift and go to state 61 ]
+  ! DOTMUL          [ shift and go to state 62 ]
+  ! DOTDIV          [ shift and go to state 63 ]
 
 
-state 67
+state 66
 
     (28) expr -> ( expr . )
     (16) expr -> expr . + expr
@@ -1946,28 +1987,28 @@ state 67
     (23) expr -> expr . DOTDIV expr
     (30) expr -> expr . '
 
-    )               shift and go to state 96
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    )               shift and go to state 95
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
-state 68
+state 67
 
     (37) expr -> [ lists . ]
     (39) lists -> lists . , list
 
-    ]               shift and go to state 97
-    ,               shift and go to state 98
+    ]               shift and go to state 96
+    ,               shift and go to state 97
 
 
-state 69
+state 68
 
     (38) lists -> list .
 
@@ -1975,7 +2016,7 @@ state 69
     ,               reduce using rule 38 (lists -> list .)
 
 
-state 70
+state 69
 
     (46) expr -> fun ( . expr )
     (16) expr -> . expr + expr
@@ -1996,26 +2037,27 @@ state 70
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    fun                            shift and go to state 39
-    expr                           shift and go to state 99
-    id                             shift and go to state 35
+    fun                            shift and go to state 37
+    expr                           shift and go to state 98
+    id                             shift and go to state 33
 
-state 71
+state 70
 
     (54) stmt -> PRINT seq ; .
 
@@ -2034,7 +2076,7 @@ state 71
     ELSE            reduce using rule 54 (stmt -> PRINT seq ; .)
 
 
-state 72
+state 71
 
     (42) seq -> seq , . expr
     (16) expr -> . expr + expr
@@ -2055,24 +2097,34 @@ state 72
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    expr                           shift and go to state 100
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    expr                           shift and go to state 99
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
+
+state 72
+
+    (40) list -> [ seq . ]
+    (42) seq -> seq . , expr
+
+    ]               shift and go to state 100
+    ,               shift and go to state 71
+
 
 state 73
 
@@ -2187,9 +2239,9 @@ state 78
     (52) stmt -> . CONTINUE ;
     (53) stmt -> . RETURN expr ;
     (54) stmt -> . PRINT seq ;
-    (9) lvalue -> . id
-    (10) lvalue -> . id list
+    (10) lvalue -> . id
     (8) id -> . ID
+    (9) id -> . ID list
 
     ;               shift and go to state 5
     {               shift and go to state 6
@@ -2227,24 +2279,25 @@ state 79
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
     expr                           shift and go to state 102
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 80
 
@@ -2267,24 +2320,25 @@ state 80
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
     expr                           shift and go to state 103
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 81
 
@@ -2307,24 +2361,25 @@ state 81
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
     expr                           shift and go to state 104
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 82
 
@@ -2347,24 +2402,25 @@ state 82
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
     expr                           shift and go to state 105
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 83
 
@@ -2387,24 +2443,25 @@ state 83
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
     expr                           shift and go to state 106
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 84
 
@@ -2427,24 +2484,25 @@ state 84
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
     expr                           shift and go to state 107
-    id                             shift and go to state 35
-    fun                            shift and go to state 39
+    id                             shift and go to state 33
+    fun                            shift and go to state 37
 
 state 85
 
@@ -2460,31 +2518,18 @@ state 85
     (30) expr -> expr . '
 
     :               shift and go to state 108
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
 state 86
-
-    (40) list -> [ seq ] .
-
-    =               reduce using rule 40 (list -> [ seq ] .)
-    ADDASSIGN       reduce using rule 40 (list -> [ seq ] .)
-    SUBASSIGN       reduce using rule 40 (list -> [ seq ] .)
-    MULASSIGN       reduce using rule 40 (list -> [ seq ] .)
-    DIVASSIGN       reduce using rule 40 (list -> [ seq ] .)
-    ]               reduce using rule 40 (list -> [ seq ] .)
-    ,               reduce using rule 40 (list -> [ seq ] .)
-
-
-state 87
 
     (49) stmt -> IF ( cond ) . stmt
     (50) stmt -> IF ( cond ) . stmt ELSE stmt
@@ -2503,9 +2548,9 @@ state 87
     (52) stmt -> . CONTINUE ;
     (53) stmt -> . RETURN expr ;
     (54) stmt -> . PRINT seq ;
-    (9) lvalue -> . id
-    (10) lvalue -> . id list
+    (10) lvalue -> . id
     (8) id -> . ID
+    (9) id -> . ID list
 
     ;               shift and go to state 5
     {               shift and go to state 6
@@ -2522,7 +2567,7 @@ state 87
     lvalue                         shift and go to state 7
     id                             shift and go to state 10
 
-state 88
+state 87
 
     (16) expr -> expr + expr .
     (16) expr -> expr . + expr
@@ -2545,8 +2590,8 @@ state 88
     GE              reduce using rule 16 (expr -> expr + expr .)
     EQ              reduce using rule 16 (expr -> expr + expr .)
     NEQ             reduce using rule 16 (expr -> expr + expr .)
-    ]               reduce using rule 16 (expr -> expr + expr .)
     )               reduce using rule 16 (expr -> expr + expr .)
+    ]               reduce using rule 16 (expr -> expr + expr .)
     :               reduce using rule 16 (expr -> expr + expr .)
     {               reduce using rule 16 (expr -> expr + expr .)
     WHILE           reduce using rule 16 (expr -> expr + expr .)
@@ -2557,13 +2602,13 @@ state 88
     RETURN          reduce using rule 16 (expr -> expr + expr .)
     PRINT           reduce using rule 16 (expr -> expr + expr .)
     ID              reduce using rule 16 (expr -> expr + expr .)
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
   ! *               [ reduce using rule 16 (expr -> expr + expr .) ]
   ! /               [ reduce using rule 16 (expr -> expr + expr .) ]
@@ -2572,11 +2617,11 @@ state 88
   ! DOTMUL          [ reduce using rule 16 (expr -> expr + expr .) ]
   ! DOTDIV          [ reduce using rule 16 (expr -> expr + expr .) ]
   ! '               [ reduce using rule 16 (expr -> expr + expr .) ]
-  ! +               [ shift and go to state 57 ]
-  ! -               [ shift and go to state 58 ]
+  ! +               [ shift and go to state 56 ]
+  ! -               [ shift and go to state 57 ]
 
 
-state 89
+state 88
 
     (17) expr -> expr - expr .
     (16) expr -> expr . + expr
@@ -2599,8 +2644,8 @@ state 89
     GE              reduce using rule 17 (expr -> expr - expr .)
     EQ              reduce using rule 17 (expr -> expr - expr .)
     NEQ             reduce using rule 17 (expr -> expr - expr .)
-    ]               reduce using rule 17 (expr -> expr - expr .)
     )               reduce using rule 17 (expr -> expr - expr .)
+    ]               reduce using rule 17 (expr -> expr - expr .)
     :               reduce using rule 17 (expr -> expr - expr .)
     {               reduce using rule 17 (expr -> expr - expr .)
     WHILE           reduce using rule 17 (expr -> expr - expr .)
@@ -2611,13 +2656,13 @@ state 89
     RETURN          reduce using rule 17 (expr -> expr - expr .)
     PRINT           reduce using rule 17 (expr -> expr - expr .)
     ID              reduce using rule 17 (expr -> expr - expr .)
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
   ! *               [ reduce using rule 17 (expr -> expr - expr .) ]
   ! /               [ reduce using rule 17 (expr -> expr - expr .) ]
@@ -2626,11 +2671,11 @@ state 89
   ! DOTMUL          [ reduce using rule 17 (expr -> expr - expr .) ]
   ! DOTDIV          [ reduce using rule 17 (expr -> expr - expr .) ]
   ! '               [ reduce using rule 17 (expr -> expr - expr .) ]
-  ! +               [ shift and go to state 57 ]
-  ! -               [ shift and go to state 58 ]
+  ! +               [ shift and go to state 56 ]
+  ! -               [ shift and go to state 57 ]
 
 
-state 90
+state 89
 
     (18) expr -> expr * expr .
     (16) expr -> expr . + expr
@@ -2655,8 +2700,8 @@ state 90
     GE              reduce using rule 18 (expr -> expr * expr .)
     EQ              reduce using rule 18 (expr -> expr * expr .)
     NEQ             reduce using rule 18 (expr -> expr * expr .)
-    ]               reduce using rule 18 (expr -> expr * expr .)
     )               reduce using rule 18 (expr -> expr * expr .)
+    ]               reduce using rule 18 (expr -> expr * expr .)
     :               reduce using rule 18 (expr -> expr * expr .)
     {               reduce using rule 18 (expr -> expr * expr .)
     WHILE           reduce using rule 18 (expr -> expr * expr .)
@@ -2667,24 +2712,24 @@ state 90
     RETURN          reduce using rule 18 (expr -> expr * expr .)
     PRINT           reduce using rule 18 (expr -> expr * expr .)
     ID              reduce using rule 18 (expr -> expr * expr .)
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
   ! DOTADD          [ reduce using rule 18 (expr -> expr * expr .) ]
   ! DOTSUB          [ reduce using rule 18 (expr -> expr * expr .) ]
   ! DOTMUL          [ reduce using rule 18 (expr -> expr * expr .) ]
   ! DOTDIV          [ reduce using rule 18 (expr -> expr * expr .) ]
   ! '               [ reduce using rule 18 (expr -> expr * expr .) ]
-  ! +               [ shift and go to state 57 ]
-  ! -               [ shift and go to state 58 ]
-  ! *               [ shift and go to state 59 ]
-  ! /               [ shift and go to state 60 ]
+  ! +               [ shift and go to state 56 ]
+  ! -               [ shift and go to state 57 ]
+  ! *               [ shift and go to state 58 ]
+  ! /               [ shift and go to state 59 ]
 
 
-state 91
+state 90
 
     (19) expr -> expr / expr .
     (16) expr -> expr . + expr
@@ -2709,8 +2754,8 @@ state 91
     GE              reduce using rule 19 (expr -> expr / expr .)
     EQ              reduce using rule 19 (expr -> expr / expr .)
     NEQ             reduce using rule 19 (expr -> expr / expr .)
-    ]               reduce using rule 19 (expr -> expr / expr .)
     )               reduce using rule 19 (expr -> expr / expr .)
+    ]               reduce using rule 19 (expr -> expr / expr .)
     :               reduce using rule 19 (expr -> expr / expr .)
     {               reduce using rule 19 (expr -> expr / expr .)
     WHILE           reduce using rule 19 (expr -> expr / expr .)
@@ -2721,24 +2766,24 @@ state 91
     RETURN          reduce using rule 19 (expr -> expr / expr .)
     PRINT           reduce using rule 19 (expr -> expr / expr .)
     ID              reduce using rule 19 (expr -> expr / expr .)
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
   ! DOTADD          [ reduce using rule 19 (expr -> expr / expr .) ]
   ! DOTSUB          [ reduce using rule 19 (expr -> expr / expr .) ]
   ! DOTMUL          [ reduce using rule 19 (expr -> expr / expr .) ]
   ! DOTDIV          [ reduce using rule 19 (expr -> expr / expr .) ]
   ! '               [ reduce using rule 19 (expr -> expr / expr .) ]
-  ! +               [ shift and go to state 57 ]
-  ! -               [ shift and go to state 58 ]
-  ! *               [ shift and go to state 59 ]
-  ! /               [ shift and go to state 60 ]
+  ! +               [ shift and go to state 56 ]
+  ! -               [ shift and go to state 57 ]
+  ! *               [ shift and go to state 58 ]
+  ! /               [ shift and go to state 59 ]
 
 
-state 92
+state 91
 
     (20) expr -> expr DOTADD expr .
     (16) expr -> expr . + expr
@@ -2765,8 +2810,8 @@ state 92
     GE              reduce using rule 20 (expr -> expr DOTADD expr .)
     EQ              reduce using rule 20 (expr -> expr DOTADD expr .)
     NEQ             reduce using rule 20 (expr -> expr DOTADD expr .)
-    ]               reduce using rule 20 (expr -> expr DOTADD expr .)
     )               reduce using rule 20 (expr -> expr DOTADD expr .)
+    ]               reduce using rule 20 (expr -> expr DOTADD expr .)
     :               reduce using rule 20 (expr -> expr DOTADD expr .)
     {               reduce using rule 20 (expr -> expr DOTADD expr .)
     WHILE           reduce using rule 20 (expr -> expr DOTADD expr .)
@@ -2777,22 +2822,22 @@ state 92
     RETURN          reduce using rule 20 (expr -> expr DOTADD expr .)
     PRINT           reduce using rule 20 (expr -> expr DOTADD expr .)
     ID              reduce using rule 20 (expr -> expr DOTADD expr .)
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
   ! DOTMUL          [ reduce using rule 20 (expr -> expr DOTADD expr .) ]
   ! DOTDIV          [ reduce using rule 20 (expr -> expr DOTADD expr .) ]
   ! '               [ reduce using rule 20 (expr -> expr DOTADD expr .) ]
-  ! +               [ shift and go to state 57 ]
-  ! -               [ shift and go to state 58 ]
-  ! *               [ shift and go to state 59 ]
-  ! /               [ shift and go to state 60 ]
-  ! DOTADD          [ shift and go to state 61 ]
-  ! DOTSUB          [ shift and go to state 62 ]
+  ! +               [ shift and go to state 56 ]
+  ! -               [ shift and go to state 57 ]
+  ! *               [ shift and go to state 58 ]
+  ! /               [ shift and go to state 59 ]
+  ! DOTADD          [ shift and go to state 60 ]
+  ! DOTSUB          [ shift and go to state 61 ]
 
 
-state 93
+state 92
 
     (21) expr -> expr DOTSUB expr .
     (16) expr -> expr . + expr
@@ -2819,8 +2864,8 @@ state 93
     GE              reduce using rule 21 (expr -> expr DOTSUB expr .)
     EQ              reduce using rule 21 (expr -> expr DOTSUB expr .)
     NEQ             reduce using rule 21 (expr -> expr DOTSUB expr .)
-    ]               reduce using rule 21 (expr -> expr DOTSUB expr .)
     )               reduce using rule 21 (expr -> expr DOTSUB expr .)
+    ]               reduce using rule 21 (expr -> expr DOTSUB expr .)
     :               reduce using rule 21 (expr -> expr DOTSUB expr .)
     {               reduce using rule 21 (expr -> expr DOTSUB expr .)
     WHILE           reduce using rule 21 (expr -> expr DOTSUB expr .)
@@ -2831,22 +2876,22 @@ state 93
     RETURN          reduce using rule 21 (expr -> expr DOTSUB expr .)
     PRINT           reduce using rule 21 (expr -> expr DOTSUB expr .)
     ID              reduce using rule 21 (expr -> expr DOTSUB expr .)
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
   ! DOTMUL          [ reduce using rule 21 (expr -> expr DOTSUB expr .) ]
   ! DOTDIV          [ reduce using rule 21 (expr -> expr DOTSUB expr .) ]
   ! '               [ reduce using rule 21 (expr -> expr DOTSUB expr .) ]
-  ! +               [ shift and go to state 57 ]
-  ! -               [ shift and go to state 58 ]
-  ! *               [ shift and go to state 59 ]
-  ! /               [ shift and go to state 60 ]
-  ! DOTADD          [ shift and go to state 61 ]
-  ! DOTSUB          [ shift and go to state 62 ]
+  ! +               [ shift and go to state 56 ]
+  ! -               [ shift and go to state 57 ]
+  ! *               [ shift and go to state 58 ]
+  ! /               [ shift and go to state 59 ]
+  ! DOTADD          [ shift and go to state 60 ]
+  ! DOTSUB          [ shift and go to state 61 ]
 
 
-state 94
+state 93
 
     (22) expr -> expr DOTMUL expr .
     (16) expr -> expr . + expr
@@ -2875,8 +2920,8 @@ state 94
     GE              reduce using rule 22 (expr -> expr DOTMUL expr .)
     EQ              reduce using rule 22 (expr -> expr DOTMUL expr .)
     NEQ             reduce using rule 22 (expr -> expr DOTMUL expr .)
-    ]               reduce using rule 22 (expr -> expr DOTMUL expr .)
     )               reduce using rule 22 (expr -> expr DOTMUL expr .)
+    ]               reduce using rule 22 (expr -> expr DOTMUL expr .)
     :               reduce using rule 22 (expr -> expr DOTMUL expr .)
     {               reduce using rule 22 (expr -> expr DOTMUL expr .)
     WHILE           reduce using rule 22 (expr -> expr DOTMUL expr .)
@@ -2887,20 +2932,20 @@ state 94
     RETURN          reduce using rule 22 (expr -> expr DOTMUL expr .)
     PRINT           reduce using rule 22 (expr -> expr DOTMUL expr .)
     ID              reduce using rule 22 (expr -> expr DOTMUL expr .)
-    '               shift and go to state 65
+    '               shift and go to state 64
 
   ! '               [ reduce using rule 22 (expr -> expr DOTMUL expr .) ]
-  ! +               [ shift and go to state 57 ]
-  ! -               [ shift and go to state 58 ]
-  ! *               [ shift and go to state 59 ]
-  ! /               [ shift and go to state 60 ]
-  ! DOTADD          [ shift and go to state 61 ]
-  ! DOTSUB          [ shift and go to state 62 ]
-  ! DOTMUL          [ shift and go to state 63 ]
-  ! DOTDIV          [ shift and go to state 64 ]
+  ! +               [ shift and go to state 56 ]
+  ! -               [ shift and go to state 57 ]
+  ! *               [ shift and go to state 58 ]
+  ! /               [ shift and go to state 59 ]
+  ! DOTADD          [ shift and go to state 60 ]
+  ! DOTSUB          [ shift and go to state 61 ]
+  ! DOTMUL          [ shift and go to state 62 ]
+  ! DOTDIV          [ shift and go to state 63 ]
 
 
-state 95
+state 94
 
     (23) expr -> expr DOTDIV expr .
     (16) expr -> expr . + expr
@@ -2929,8 +2974,8 @@ state 95
     GE              reduce using rule 23 (expr -> expr DOTDIV expr .)
     EQ              reduce using rule 23 (expr -> expr DOTDIV expr .)
     NEQ             reduce using rule 23 (expr -> expr DOTDIV expr .)
-    ]               reduce using rule 23 (expr -> expr DOTDIV expr .)
     )               reduce using rule 23 (expr -> expr DOTDIV expr .)
+    ]               reduce using rule 23 (expr -> expr DOTDIV expr .)
     :               reduce using rule 23 (expr -> expr DOTDIV expr .)
     {               reduce using rule 23 (expr -> expr DOTDIV expr .)
     WHILE           reduce using rule 23 (expr -> expr DOTDIV expr .)
@@ -2941,20 +2986,20 @@ state 95
     RETURN          reduce using rule 23 (expr -> expr DOTDIV expr .)
     PRINT           reduce using rule 23 (expr -> expr DOTDIV expr .)
     ID              reduce using rule 23 (expr -> expr DOTDIV expr .)
-    '               shift and go to state 65
+    '               shift and go to state 64
 
   ! '               [ reduce using rule 23 (expr -> expr DOTDIV expr .) ]
-  ! +               [ shift and go to state 57 ]
-  ! -               [ shift and go to state 58 ]
-  ! *               [ shift and go to state 59 ]
-  ! /               [ shift and go to state 60 ]
-  ! DOTADD          [ shift and go to state 61 ]
-  ! DOTSUB          [ shift and go to state 62 ]
-  ! DOTMUL          [ shift and go to state 63 ]
-  ! DOTDIV          [ shift and go to state 64 ]
+  ! +               [ shift and go to state 56 ]
+  ! -               [ shift and go to state 57 ]
+  ! *               [ shift and go to state 58 ]
+  ! /               [ shift and go to state 59 ]
+  ! DOTADD          [ shift and go to state 60 ]
+  ! DOTSUB          [ shift and go to state 61 ]
+  ! DOTMUL          [ shift and go to state 62 ]
+  ! DOTDIV          [ shift and go to state 63 ]
 
 
-state 96
+state 95
 
     (28) expr -> ( expr ) .
 
@@ -2975,8 +3020,8 @@ state 96
     GE              reduce using rule 28 (expr -> ( expr ) .)
     EQ              reduce using rule 28 (expr -> ( expr ) .)
     NEQ             reduce using rule 28 (expr -> ( expr ) .)
-    ]               reduce using rule 28 (expr -> ( expr ) .)
     )               reduce using rule 28 (expr -> ( expr ) .)
+    ]               reduce using rule 28 (expr -> ( expr ) .)
     :               reduce using rule 28 (expr -> ( expr ) .)
     {               reduce using rule 28 (expr -> ( expr ) .)
     WHILE           reduce using rule 28 (expr -> ( expr ) .)
@@ -2989,7 +3034,7 @@ state 96
     ID              reduce using rule 28 (expr -> ( expr ) .)
 
 
-state 97
+state 96
 
     (37) expr -> [ lists ] .
 
@@ -3010,8 +3055,8 @@ state 97
     GE              reduce using rule 37 (expr -> [ lists ] .)
     EQ              reduce using rule 37 (expr -> [ lists ] .)
     NEQ             reduce using rule 37 (expr -> [ lists ] .)
-    ]               reduce using rule 37 (expr -> [ lists ] .)
     )               reduce using rule 37 (expr -> [ lists ] .)
+    ]               reduce using rule 37 (expr -> [ lists ] .)
     :               reduce using rule 37 (expr -> [ lists ] .)
     {               reduce using rule 37 (expr -> [ lists ] .)
     WHILE           reduce using rule 37 (expr -> [ lists ] .)
@@ -3024,16 +3069,16 @@ state 97
     ID              reduce using rule 37 (expr -> [ lists ] .)
 
 
-state 98
+state 97
 
     (39) lists -> lists , . list
     (40) list -> . [ seq ]
 
-    [               shift and go to state 27
+    [               shift and go to state 44
 
     list                           shift and go to state 110
 
-state 99
+state 98
 
     (46) expr -> fun ( expr . )
     (16) expr -> expr . + expr
@@ -3047,18 +3092,18 @@ state 99
     (30) expr -> expr . '
 
     )               shift and go to state 111
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
-state 100
+state 99
 
     (42) seq -> seq , expr .
     (16) expr -> expr . + expr
@@ -3074,15 +3119,55 @@ state 100
     ;               reduce using rule 42 (seq -> seq , expr .)
     ,               reduce using rule 42 (seq -> seq , expr .)
     ]               reduce using rule 42 (seq -> seq , expr .)
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
+
+
+state 100
+
+    (40) list -> [ seq ] .
+
+    =               reduce using rule 40 (list -> [ seq ] .)
+    ADDASSIGN       reduce using rule 40 (list -> [ seq ] .)
+    SUBASSIGN       reduce using rule 40 (list -> [ seq ] .)
+    MULASSIGN       reduce using rule 40 (list -> [ seq ] .)
+    DIVASSIGN       reduce using rule 40 (list -> [ seq ] .)
+    ;               reduce using rule 40 (list -> [ seq ] .)
+    +               reduce using rule 40 (list -> [ seq ] .)
+    -               reduce using rule 40 (list -> [ seq ] .)
+    *               reduce using rule 40 (list -> [ seq ] .)
+    /               reduce using rule 40 (list -> [ seq ] .)
+    DOTADD          reduce using rule 40 (list -> [ seq ] .)
+    DOTSUB          reduce using rule 40 (list -> [ seq ] .)
+    DOTMUL          reduce using rule 40 (list -> [ seq ] .)
+    DOTDIV          reduce using rule 40 (list -> [ seq ] .)
+    '               reduce using rule 40 (list -> [ seq ] .)
+    ,               reduce using rule 40 (list -> [ seq ] .)
+    <               reduce using rule 40 (list -> [ seq ] .)
+    >               reduce using rule 40 (list -> [ seq ] .)
+    LE              reduce using rule 40 (list -> [ seq ] .)
+    GE              reduce using rule 40 (list -> [ seq ] .)
+    EQ              reduce using rule 40 (list -> [ seq ] .)
+    NEQ             reduce using rule 40 (list -> [ seq ] .)
+    )               reduce using rule 40 (list -> [ seq ] .)
+    ]               reduce using rule 40 (list -> [ seq ] .)
+    :               reduce using rule 40 (list -> [ seq ] .)
+    {               reduce using rule 40 (list -> [ seq ] .)
+    WHILE           reduce using rule 40 (list -> [ seq ] .)
+    FOR             reduce using rule 40 (list -> [ seq ] .)
+    IF              reduce using rule 40 (list -> [ seq ] .)
+    BREAK           reduce using rule 40 (list -> [ seq ] .)
+    CONTINUE        reduce using rule 40 (list -> [ seq ] .)
+    RETURN          reduce using rule 40 (list -> [ seq ] .)
+    PRINT           reduce using rule 40 (list -> [ seq ] .)
+    ID              reduce using rule 40 (list -> [ seq ] .)
 
 
 state 101
@@ -3118,15 +3203,15 @@ state 102
     (30) expr -> expr . '
 
     )               reduce using rule 31 (cond -> expr < expr .)
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
 state 103
@@ -3143,15 +3228,15 @@ state 103
     (30) expr -> expr . '
 
     )               reduce using rule 32 (cond -> expr > expr .)
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
 state 104
@@ -3168,15 +3253,15 @@ state 104
     (30) expr -> expr . '
 
     )               reduce using rule 33 (cond -> expr LE expr .)
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
 state 105
@@ -3193,15 +3278,15 @@ state 105
     (30) expr -> expr . '
 
     )               reduce using rule 34 (cond -> expr GE expr .)
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
 state 106
@@ -3218,15 +3303,15 @@ state 106
     (30) expr -> expr . '
 
     )               reduce using rule 35 (cond -> expr EQ expr .)
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
 state 107
@@ -3243,15 +3328,15 @@ state 107
     (30) expr -> expr . '
 
     )               reduce using rule 36 (cond -> expr NEQ expr .)
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
 
 
 state 108
@@ -3275,24 +3360,25 @@ state 108
     (37) expr -> . [ lists ]
     (46) expr -> . fun ( expr )
     (8) id -> . ID
+    (9) id -> . ID list
     (43) fun -> . ZEROS
     (44) fun -> . EYE
     (45) fun -> . ONES
 
-    FLOATNUM        shift and go to state 33
-    INTNUM          shift and go to state 34
-    STR             shift and go to state 36
-    (               shift and go to state 37
-    -               shift and go to state 32
-    [               shift and go to state 38
+    FLOATNUM        shift and go to state 31
+    INTNUM          shift and go to state 32
+    STR             shift and go to state 34
+    (               shift and go to state 35
+    -               shift and go to state 30
+    [               shift and go to state 36
     ID              shift and go to state 16
-    ZEROS           shift and go to state 40
-    EYE             shift and go to state 41
-    ONES            shift and go to state 42
+    ZEROS           shift and go to state 38
+    EYE             shift and go to state 39
+    ONES            shift and go to state 40
 
-    id                             shift and go to state 35
+    id                             shift and go to state 33
     expr                           shift and go to state 112
-    fun                            shift and go to state 39
+    fun                            shift and go to state 37
 
 state 109
 
@@ -3345,8 +3431,8 @@ state 111
     GE              reduce using rule 46 (expr -> fun ( expr ) .)
     EQ              reduce using rule 46 (expr -> fun ( expr ) .)
     NEQ             reduce using rule 46 (expr -> fun ( expr ) .)
-    ]               reduce using rule 46 (expr -> fun ( expr ) .)
     )               reduce using rule 46 (expr -> fun ( expr ) .)
+    ]               reduce using rule 46 (expr -> fun ( expr ) .)
     :               reduce using rule 46 (expr -> fun ( expr ) .)
     {               reduce using rule 46 (expr -> fun ( expr ) .)
     WHILE           reduce using rule 46 (expr -> fun ( expr ) .)
@@ -3386,19 +3472,19 @@ state 112
     (52) stmt -> . CONTINUE ;
     (53) stmt -> . RETURN expr ;
     (54) stmt -> . PRINT seq ;
-    (9) lvalue -> . id
-    (10) lvalue -> . id list
+    (10) lvalue -> . id
     (8) id -> . ID
+    (9) id -> . ID list
 
-    +               shift and go to state 57
-    -               shift and go to state 58
-    *               shift and go to state 59
-    /               shift and go to state 60
-    DOTADD          shift and go to state 61
-    DOTSUB          shift and go to state 62
-    DOTMUL          shift and go to state 63
-    DOTDIV          shift and go to state 64
-    '               shift and go to state 65
+    +               shift and go to state 56
+    -               shift and go to state 57
+    *               shift and go to state 58
+    /               shift and go to state 59
+    DOTADD          shift and go to state 60
+    DOTSUB          shift and go to state 61
+    DOTMUL          shift and go to state 62
+    DOTDIV          shift and go to state 63
+    '               shift and go to state 64
     ;               shift and go to state 5
     {               shift and go to state 6
     WHILE           shift and go to state 8
@@ -3432,9 +3518,9 @@ state 113
     (52) stmt -> . CONTINUE ;
     (53) stmt -> . RETURN expr ;
     (54) stmt -> . PRINT seq ;
-    (9) lvalue -> . id
-    (10) lvalue -> . id list
+    (10) lvalue -> . id
     (8) id -> . ID
+    (9) id -> . ID list
 
     ;               shift and go to state 5
     {               shift and go to state 6

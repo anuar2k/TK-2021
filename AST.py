@@ -72,13 +72,13 @@ class Matrix(Node):
         self.matrix = matrix
 
 class ID(Node):
-    def __init__(self, id):
-        self.id = id
-
-class LValue(Node):
     def __init__(self, id, index=None):
         self.id = id
         self.index = index
+
+class LValue(Node):
+    def __init__(self, id):
+        self.id = id
 
 class String(Node):
     def __init__(self, string):

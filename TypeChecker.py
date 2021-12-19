@@ -94,18 +94,19 @@ class TypeChecker(NodeVisitor):
     def visit_ID(self, node):
         if self.table.get(node.id) is None:
             print(f"{node.linenumber}: unknown variable: {node.id}")
-
-    def visit_LValue(self, node):
+        
         if node.index is not None:
             if len(node.index) != 2:
                 print(f"{node.linenumber}: expected len of index equal to 2")
-                # print(node)
-            self.visit(node.id) # check assignment to existing var
-            for idx in node.index:
-                self.visit(idx)
-        else:
-            # may create new variable
+            else:
+                for idx in node.index:
+                    self.visit(idx)
+
+    def visit_LValue(self, node):
+        if node.id.index is None:
             self.table.put(node.id.id)
+
+        self.visit(node.id)
 
     def visit_String(self, node):
         pass
