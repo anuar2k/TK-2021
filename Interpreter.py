@@ -1,4 +1,3 @@
-
 import AST
 from Memory import *
 from Exceptions import  *
@@ -8,8 +7,6 @@ import sys
 import numpy as np
 
 sys.setrecursionlimit(10000)
-
-    
 
 class Interpreter(object):
     def __init__(self):
@@ -30,11 +27,6 @@ class Interpreter(object):
             "<=": lambda x, y: x <= y,
             '<': lambda x, y: x < y,
             '>': lambda x, y: x > y,
-            "=": lambda var, x: self.memory.put(var, x),
-            "+=": lambda var, x, y: self.memory.put(var, x + y),
-            "-=": lambda var, x, y: self.memory.put(var, x - y),
-            "*=": lambda var, x, y: self.memory.put(var, x * y),
-            "/=": lambda var, x, y: self.memory.put(var, x / y),
             "zeros": lambda s: np.zeros((s,s)),
             "ones": lambda s: np.ones((s,s)),
             "eye": lambda s: np.eye(s),
@@ -81,8 +73,18 @@ class Interpreter(object):
 
     @when(AST.Assign)
     def visit(self, node):
-        # TODO: assign
-        pass
+        to_assign = self.visit(node.right)
+
+        if node.op[0] != '=':
+            if node.left.id.index is None:
+                to_assign = self.op_dict[node.op[0]](self.memory.get(node.left.id.id), to_assign)
+            else:
+                x, y = node.left.id.index
+                subs = np.copy(self.memory.get(node.left.id.id))
+                subs[x, y] = self.op_dict[node.op[0]](subs[x, y], to_assign)
+                to_assign = subs
+
+        self.memory.put(node.left.id.id, to_assign)
 
     @when(AST.IfCond)
     def visit(self, node):
